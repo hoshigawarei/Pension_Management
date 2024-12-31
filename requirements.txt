@@ -1,0 +1,6 @@
+flask_sqlalchemy
+flask_migrate
+flask_login
+flask-bcrypt
+
+#  pip install -r requirements.txt

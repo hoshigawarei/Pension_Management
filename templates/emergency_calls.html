@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>呼救记录</title>
+
+
+    
+    <!-- 引入自定义 CSS 样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+</head>
+
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">您的呼救记录</h1>
+
+        {% if emergency_calls %}
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>呼救编号</th>
+                        <th>呼救类型</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for call in emergency_calls %}
+                    <tr>
+                        <td>{{ call.EmergencyCallID }}</td>
+                        <td>{{ call.CallType }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">暂无呼救记录。</p>
+        {% endif %}
+
+        <h2 class="text-center mt-4">发起新的呼救</h2>
+        <div class="text-center">
+            <form method="POST" action="{{ url_for('emergencycall.manage_emergency_call') }}">
+                <button type="submit" class="btn btn-danger btn-lg">自动呼救</button>
+            </form>
+        </div>
+
+        <br>
+        <div class="text-center">
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-link">返回用户中心</a>
+        </div>
+    </div>
+</body>
+</html>
