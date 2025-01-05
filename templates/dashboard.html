@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户用户中心</title>
+
+    <!-- 引入自定义 CSS 样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+  </head>
+
+<body>
+    <div class="container py-4">
+        <h1 class="animate__animated animate__bounce">欢迎，{{ user.Username }}！</h1>
+        <p class="animate__animated animate__bounce"">用户 ID: {{ user.UserID }}</p>
+        <p class="animate__animated animate__bounce"">角色: {{ role }}</p>
+
+        <h2 class="animate__animated animate__bounce"">功能</h2>
+
+        <!-- 功能按钮根据用户角色显示 -->
+        <div class="d-grid gap-2 col-6 mx-auto mt-3">
+            {% if role == '一般用户' %}
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/user/view_institutions'">浏览机构</button>
+            {% elif role == '老年用户' %}
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/user/view_institutions'">浏览机构</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/healthdata/view_health_data'">查看健康数据</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/emergency/emergency_call'">呼救</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/reservation/reservation'">预约服务</button>
+            {% elif role == '家属、看护用户' %}
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/user/view_institutions'">浏览机构</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/healthdata/view_health_data'">查看健康数据</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/emergency/view_emergency_call'">查看呼救</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/reservation/reservation'">预约服务</button>
+            {% elif role == '机构管理用户' %}
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/user/view_institutions'">浏览机构</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/institution/manage_institution'">管理机构</button>
+            {% elif role == '民政部门用户' %}
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/user/view_institutions'">浏览机构</button>
+                <button class="animate__animated animate__bounce" onclick="window.location.href='/manage_report/manage_report'">处理举报</button>
+            {% endif %}
+        </div>
+        <div>
+            <br>
+            <a href="/">退出登录</a>
+
+        </div>
+    </div>
+</body>
+</html>

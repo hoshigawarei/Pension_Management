@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Institutions</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    
+<body>
+    <div class="container mt-5">
+        <h1>浏览机构</h1>
+        <br>
+
+        {% if not table_type %}
+        <!-- 显示选择按钮 -->
+        <form method="GET" action="{{ url_for('user.view_institutions') }}">
+            <button type="submit" name="type" value="elderly" class="btn btn-primary">养老机构</button>
+            <button type="submit" name="type" value="funeral" class="btn btn-secondary">殡葬机构</button>
+            <br>
+            <br>
+            <a href="/user/dashboard">返回用户中心</a>
+        </form>
+        {% else %}
+        <!-- 搜索框和表格 -->
+        <form method="GET" action="{{ url_for('user.view_institutions') }}">
+            <input type="hidden" name="type" value="{{ table_type }}">
+            <div class="form-group">
+                <input type="text" name="search" class="form-control" placeholder="搜索机构" value="{{ search_term }}">
+            </div>
+            <button type="submit" class="btn btn-primary">搜索</button>
+            <button type="button" onclick="window.location.href='/user/view_institutions'" class="btn btn-secondary">返回</button>
+        </form>
+
+        {% if search_feedback %}
+        <div class="alert alert-warning mt-3">
+            {{ search_feedback }}
+        </div>
+        {% endif %}
+
+            
+            {% if table_type == 'elderly' %}
+                <h2>养老机构</h2>
+                <!-- StreetTown 筛选框 -->
+                <form method="GET" action="{{ url_for('user.view_institutions') }}">
+                    <input type="hidden" name="type" value="elderly">
+                    <div class="form-group">
+                        <label for="street_town_filter">街道/乡镇</label>
+                        <select name="street_town" class="form-control" id="street_town_filter">
+                            <option value="">选择一个街道/乡镇</option>
+                            {% for street_town in street_towns %}
+                                <option value="{{ street_town[0] }}" {% if street_town[0] == street_town_filter %}selected{% endif %}>{{ street_town[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">筛选</button>
+                </form>
+
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>机构名称</th>
+                            <th>街道/乡镇</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for institution in institutions %}
+                        <tr>
+                            <td>{{ institution.InstitutionName }}</td>
+                            <td class="ellipsis">{{ institution.StreetTown }}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm toggle-details" data-target="#details-{{ institution.InstitutionID }}">查看详情信息</button>
+                                <a href="{{ url_for('review.view_evaluations', InstitutionID=institution.InstitutionID) }}" class="btn btn-warning btn-sm">查看评价</a>
+                                <a href="{{ url_for('review.view_reports', InstitutionID=institution.InstitutionID) }}" class="btn btn-warning btn-sm">查看举报</a>
+                            </td>
+                        </tr>
+                        <tr id="details-{{ institution.InstitutionID }}" class="collapse">
+                            <td colspan="3">
+                                <strong>机构名称：</strong> {{ institution.InstitutionName }}<br>
+                                <strong>街道/乡镇：</strong> {{ institution.StreetTown }}<br>
+                                <strong>床位数：</strong> {{ institution.BedCount }}<br>
+                                <strong>详细地址：</strong> {{ institution.Address }}<br>
+                                <strong>联系电话：</strong> {{ institution.PhoneNumber }}<br>
+                                <strong>邮编：</strong> {{ institution.PostalCode }}<br>
+                                <strong>运营模式：</strong> {{ institution.OperationMode }}<br>
+                                <strong>法人代表：</strong> {{ institution.LegalRepresentative }}<br>
+                                <strong>创办时间：</strong> {{ institution.OperationYearMonth }}<br>
+                            </td>
+                        </tr>
+                        
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif table_type == 'funeral' %}
+                <h2>殡葬机构</h2>
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>机构名称</th>
+                            <th>地址</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for institution in institutions %}
+                        <tr>
+                            <td>{{ institution.InstitutionName }}</td>
+                            <td class="ellipsis">{{ institution.Address }}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm toggle-details" data-target="#details-{{ institution.InstitutionID }}">查看详情信息</button>
+                                <a href="{{ url_for('review.view_evaluations', InstitutionID=institution.InstitutionID) }}" class="btn btn-warning btn-sm">查看评价</a>
+                                <a href="{{ url_for('review.view_reports', InstitutionID=institution.InstitutionID) }}" class="btn btn-warning btn-sm">查看举报</a>
+                            </td>
+                        </tr>
+                        <tr id="details-{{ institution.InstitutionID }}" class="collapse">
+                            <td colspan="3">
+                                <strong>机构名称：</strong> {{ institution.InstitutionName }}<br>
+                                <strong>详细地址：</strong> {{ institution.Address }}<br>
+                                <strong>联系电话：</strong> {{ institution.PhoneNumber }}<br>
+                                <strong>邮编：</strong> {{ institution.PostalCode }}<br>
+                                <strong>联系人：</strong> {{ institution.ContactPerson }}<br>
+                                <strong>机构种类：</strong> {{ institution.InstitutionType }}<br>
+                                <strong>服务范围：</strong> {{ institution.ServiceScope }}<br>
+                            </td>
+                        </tr>
+                       
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            <div class="pagination">
+                {% if institutions.has_prev %}
+                    <a href="{{ url_for('user.view_institutions', page=institutions.prev_num, type=table_type, search=search_term, street_town=street_town_filter) }}" class="btn btn-primary">上一页</a>
+                {% endif %}
+            
+                <span>第 {{ institutions.page }} 页</span>
+            
+                {% if institutions.has_next %}
+                    <a href="{{ url_for('user.view_institutions', page=institutions.next_num, type=table_type, search=search_term, street_town=street_town_filter) }}" class="btn btn-primary">下一页</a>
+                {% endif %}
+
+                <span style="float: right;">共 {{ institutions.pages }} 页</span>
+            </div>            
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 避免重复的折叠动作
+            $('.toggle-details').click(function() {
+                var target = $(this).data('target');
+                $(target).toggleClass('collapse');
+            });
+
+            $('.toggle-evaluation').click(function() {
+                var target = $(this).data('target');
+                $(target).toggleClass('collapse');
+            });
+        });
+    </script>
+</body>
+</html>

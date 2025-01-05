@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑举报信息</title>
+
+    
+    <!-- 引入自定义 CSS 样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+</head>
+
+<body>
+    <div class="container py-4">
+        <h1 class="text-center mb-4">编辑举报信息</h1>
+
+        <h2 class="text-center mb-3">
+            {% if institution_type == 'elder' %}
+                养老机构举报
+            {% elif institution_type == 'funeral' %}
+                殡葬机构举报
+            {% endif %}
+        </h2>
+        <p class="text-center"><strong>机构名称:</strong> {{ institution_name }}</p>
+
+        <form method="POST" class="mt-4">
+            <div class="mb-3">
+                <label for="report_info" class="form-label">举报内容:</label>
+                <textarea name="report_info" id="report_info" rows="4" class="form-control">{{ report_info }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">提交更新</button>
+        </form>
+
+        <br>
+        <a href="{{ url_for('manage_report.manage_report') }}" class="btn btn-link">返回管理举报信息</a>
+    </div>
+</body>
+</html>

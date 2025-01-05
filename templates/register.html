@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+
+    <!-- 引入 Bootstrap 样式表 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iN8QF6BdcYI6Wz6lm8fFXY5EXp9vnF9S0K9hb5g5uM2Gp6o3GqK8AB1Wy" crossorigin="anonymous">
+    
+    <!-- 自定义 CSS 样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+</head>
+
+<body>
+    <headerclass="text-center mt-5 mb-4">
+        <h1>用户注册</h1>
+    <headerclass>
+    
+        <!-- 以下字段根据用户类型动态显示 -->
+        <div id="extra_fields">
+            <form method="POST" action="{{ url_for('user.register') }}">
+                <label>用户名：</label><input type="text" name="username" required><br>
+                <label>密码：</label><input type="password" name="password" required><br>
+                <label>手机号：</label><input type="text" name="phone_number" required><br>
+            
+                <label>用户类型：</label>
+                <select name="user_type" id="user_type" required>
+                    <option value="1">一般用户</option>
+                    <option value="2">老年用户</option>
+                    <option value="3">家属、看护用户</option>
+                    <option value="4">机构管理用户</option>
+                    <option value="5">民政部门用户</option>
+                </select><br>
+            <div class="field" data-user-type="2">
+                <label>真实姓名：</label><input type="text" name="real_name"><br>
+                <label>身份证号：</label><input type="text" name="id_number"><br>
+                <label>居住地：</label><input type="text" name="residence"><br>
+            </div>
+            <div class="field" data-user-type="3">
+                <label>真实姓名：</label><input type="text" name="real_name"><br>
+                <label>身份证号：</label><input type="text" name="id_number"><br>
+                <label>绑定老年用户ID：</label><input type="text" name="senior_user_id"><br>
+            </div>
+            <div class="field" data-user-type="4">
+                <label>真实姓名：</label><input type="text" name="real_name"><br>
+                <label>职位：</label><input type="text" name="position"><br>
+            </div>
+            <div class="field" data-user-type="5">
+                <label>真实姓名：</label><input type="text" name="real_name"><br>
+                <label>工号：</label><input type="text" name="employee_number"><br>
+            </div>
+        </div>
+    
+        <button type="submit">注册</button>
+        <div>
+            <br>
+            <a href="/">返回</a>
+        </div>
+    </form>
+   
+    
+        <!-- 引入Bootstrap的JS（依赖jQuery） -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+        <script>
+          
+        // 监听用户类型选择变化
+        document.getElementById("user_type").addEventListener("change", function () {
+            var userType = this.value;
+            var fields = document.querySelectorAll("#extra_fields .field");
+    
+            // 隐藏所有额外字段
+            fields.forEach(function (field) {
+                field.style.display = "none";
+            });
+    
+            // 显示对应用户类型的字段
+            var targetField = document.querySelector('#extra_fields .field[data-user-type="' + userType + '"]');
+            if (targetField) {
+                targetField.style.display = "block";
+            }
+        });
+    
+        // 页面加载时默认隐藏所有额外字段
+        window.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("user_type").dispatchEvent(new Event("change"));
+        });
+    </script>
+</body>
+</html>

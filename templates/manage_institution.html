@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理机构</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- 引入 Bootstrap 样式表 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iN8QF6BdcYI6Wz6lm8fFXY5EXp9vnF9S0K9hb5g5uM2Gp6o3GqK8AB1Wy" crossorigin="anonymous">
+    
+    
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2>管理机构</h2>
+
+        <div id="elder-care-institution-list">
+            {% if elder_care_institutions %}
+                <h3>养老机构</h3>
+                {% for institution in elder_care_institutions %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ institution.InstitutionName }}</h4>
+                        <p class="card-text">地址: {{ institution.Address }}</p>
+                        <p class="card-text">联系电话: {{ institution.PhoneNumber }}</p>
+                        <p class="card-text">邮编: {{ institution.PostalCode }}</p>
+                        <p class="card-text">法定代表人: {{ institution.LegalRepresentative }}</p>
+                        <p class="card-text">床位数: {{ institution.BedCount }}</p>
+                        <p class="card-text">运营模式: {{ institution.OperationMode }}</p>
+                        <p class="card-text">运营时间: {{ institution.OperationYearMonth }}</p>
+
+                        <button class="btn btn-primary" data-institution-id="{{ institution.InstitutionID }}" data-institution-type="elder" onclick="editInstitution(this)">修改信息</button>
+                        <button class="btn btn-info" data-institution-id="{{ institution.InstitutionID }}" onclick="viewReservations(this)">查看预约</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div id="funeral-institution-list">
+            {% if funeral_institutions %}
+                <h3>殡葬机构</h3>
+                {% for institution in funeral_institutions %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ institution.InstitutionName }}</h4>
+                        <p class="card-text">地址: {{ institution.Address }}</p>
+                        <p class="card-text">联系电话: {{ institution.PhoneNumber }}</p>
+                        <p class="card-text">邮编: {{ institution.PostalCode }}</p>
+                        <p class="card-text">联系人: {{ institution.ContactPerson }}</p>
+                        <p class="card-text">机构类型: {{ institution.InstitutionType }}</p>
+                        <p class="card-text">服务范围: {{ institution.ServiceScope }}</p>
+
+                        <button class="btn btn-primary" data-institution-id="{{ institution.InstitutionID }}" data-institution-type="funeral" onclick="editInstitution(this)">修改信息</button>
+                        <button class="btn btn-info" data-institution-id="{{ institution.InstitutionID }}" onclick="viewReservations(this)">查看预约</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div id="reservation-section" style="display:none;">
+            <h3>预约信息</h3>
+            <ul id="reservation-list" class="list-group"></ul>
+        </div>
+        <div>
+            <a href="/user/dashboard">返回用户中心</a>
+            <br>
+        </div>
+    </div>
+
+    <script>
+        function getStatusDescription(status) {
+            // 根据状态返回描述
+            switch (status) {
+                case 1:
+                    return '待机构确认';
+                case 2:
+                    return '预约成功';
+                case 4:
+                    return '服务已完成';
+                default:
+                    return '未知状态';
+            }   
+        }
+
+        function viewReservations(button) {
+            const institutionId = button.getAttribute('data-institution-id');
+
+            fetch(`/institution/institution_reservations/${institutionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const reservationSection = document.getElementById('reservation-section');
+                    const reservationList = document.getElementById('reservation-list');
+
+                    reservationList.innerHTML = '';
+                    data.forEach(reservation => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        listItem.innerHTML = `
+                            <div>
+                                <p>预约 ID: ${reservation.reservation_id}</p>
+                                <p>用户 ID: ${reservation.user_id}</p>
+                                <p>预约时间: ${new Date(reservation.reservation_time).toLocaleString()}</p>
+                                <p>状态: ${getStatusDescription(reservation.status)}</p>
+                            </div>
+                            <div>
+                                <!-- 根据状态决定可点击的按钮 -->
+                                ${reservation.status === 1 || reservation.status === 2 ? `
+                                    <button class="btn btn-warning btn-sm" onclick="updateReservationStatus(this, ${reservation.reservation_id}, ${reservation.status === 1 ? 2 : 1})">
+                                        切换状态为 ${reservation.status === 1 ? '预约成功' : '待机构确认'}
+                                    </button>
+                                ` : ''}
+                                ${reservation.status === 2 || reservation.status === 4 ? `
+                                    <button class="btn btn-danger btn-sm" onclick="updateReservationStatus(this, ${reservation.reservation_id}, ${reservation.status === 2 ? 4 : 2})">
+                                        切换状态为 ${reservation.status === 2 ? '服务已完成' : '预约成功'}
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
+                        reservationList.appendChild(listItem);
+                    });
+                    reservationSection.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching reservations:', error);
+                    alert('无法获取预约信息，请重试。');
+                });
+        }
+
+        function updateReservationStatus(button, reservationId, newStatus) {
+            fetch('/institution/update_reservation_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reservation_id: reservationId, new_status: newStatus }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('预约状态更新成功！');
+                    location.reload(); // 刷新页面以显示更新结果
+                } else {
+                    alert('更新失败，请重试。');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating reservation status:', error);
+                alert('更新失败，请重试。');
+            });
+        }
+
+        function editInstitution(button) {
+            const institutionId = button.getAttribute('data-institution-id');
+            const institutionType = button.getAttribute('data-institution-type');
+
+            // 根据机构类型选择字段
+            let fieldSelectHTML = `
+                <label for="field">选择要修改的字段:</label>
+                <select name="field" id="field" class="form-control" required>
+            `;
+
+            if (institutionType === "elder") {
+                fieldSelectHTML += `
+                    <option value="Address">地址</option>
+                    <option value="PhoneNumber">联系电话</option>
+                    <option value="PostalCode">邮编</option>
+                    <option value="LegalRepresentative">法定代表人</option>
+                    <option value="BedCount">床位数</option>
+                    <option value="OperationMode">运营模式</option>
+                    <option value="OperationYearMonth">运营时间</option>
+                `;
+            } else if (institutionType === "funeral") {
+                fieldSelectHTML += `
+                    <option value="Address">地址</option>
+                    <option value="PhoneNumber">联系电话</option>
+                    <option value="PostalCode">邮编</option>
+                    <option value="ContactPerson">联系人</option>
+                    <option value="InstitutionType">机构类型</option>
+                    <option value="ServiceScope">服务范围</option>
+                `;
+            }
+
+            fieldSelectHTML += `</select>`;
+
+            // 创建输入框
+            const valueInputHTML = `
+                <label for="value">新值:</label>
+                <input type="text" id="value" class="form-control" required>
+            `;
+
+            // 显示字段选择和输入框
+            const fieldSelectContainer = document.createElement('div');
+            fieldSelectContainer.innerHTML = fieldSelectHTML + valueInputHTML;
+
+            // 使用 Bootstrap Modal 或者其他方式显示表单
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style = 'display: block;';
+            modal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">修改信息</h5>
+                            <button type="button" class="close" data-dismiss="modal" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            ${fieldSelectContainer.innerHTML}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="submitUpdate(${institutionId}, '${institutionType}')">提交</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            modal.remove();
+        }
+
+        function submitUpdate(institutionId) {
+            const field = document.getElementById('field').value;
+            const value = document.getElementById('value').value;
+
+            if (field && value) {
+                fetch('/institution/update_institution', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ institution_id: institutionId, field, value }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('信息更新成功！');
+                        location.reload(); // 刷新页面
+                    } else {
+                        alert('更新失败，请重试。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating institution:', error);
+                    alert('信息更新失败，请重试。');
+                });
+            } else {
+                alert('请确保字段和新值都已填写');
+            }
+        }
+    </script>
+</body>
+</html>
