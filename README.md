@@ -108,13 +108,17 @@ flask run
 
 ### 系统部分功能截图
 - 首页
-![front_page](img/front_page)
+
+![front_page](img/front_page.png)
 - 机构浏览、查询
-![browse_query](img/browse_query)
+
+![browse_query](img/browse_query.png)
 - 机构预约
-![reservation](img/reservation)
+
+![reservation](img/reservation.png)
 - 健康监控
-![supervise](img/supervise)
+
+![supervise](img/supervise.png)
 
 ### 未来计划
 - 增加地图定位功能，帮助用户快速找到附近的养老或殡葬机构。
