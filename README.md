@@ -96,7 +96,7 @@ flask run
 ### 演示视频
 点击以下链接查看系统的功能演示视频：
 
-🎥[演示视频链接]([https://example.com](https://drive.google.com/file/d/1cukBOf59Ge345Yo0OBCgQQ2hnKTGoezm/view?usp=drive_link))
+🎥[演示视频链接](https://drive.google.com/file/d/1cukBOf59Ge345Yo0OBCgQQ2hnKTGoezm/view?usp=drive_link)
 
 ### 开发文档
 项目的完整开发文档位于 `/doc` 文件夹。文档内容包括但不限于：
