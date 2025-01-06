@@ -1,0 +1,12 @@
+﻿PermissionID,PermissionName,PermissionDescription
+500001,ViewInstitutionInfo,查看所有公开的机构信息
+500002,"	SubmitEvaluation",评价机构
+500003,"	SubmitRating",评分机构
+500004,"	SubmitReport",提交举报信息
+500005,ViewHealthData,查看健康数据
+500006,UploadHealthData,上传健康数据
+500007,EmergencyCall,上传紧急呼救
+500008,ViewReservations,查看养老或殡葬服务
+500009,Reservations,预约养老或殡葬服务
+500010,ViewEmergencyCall,查看紧急呼救
+500011,ManageInstitutionInfo,管理机构信息

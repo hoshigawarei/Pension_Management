@@ -1,0 +1,4 @@
+EmergencyCallID,SeniorUserID,CallType
+500001,110005,auto
+500002,110006,auto
+500003,110010,self
